@@ -296,6 +296,8 @@ function partial(view, options){
   var root = dirname(options.filename)
     , file = lookup(root, view, options)
     , key = file + ':string';
+  if( !file )
+    throw new Error('Could not find partial ' + view);
 
   // read view
   var source = options.cache
