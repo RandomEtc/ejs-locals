@@ -61,7 +61,7 @@ var ejs = require('ejs')
  */
 
 var renderFile = module.exports = function(path, options, fn){
-
+  
   // Express used to set options.locals for us, but now we do it ourselves
   // (EJS does some __proto__ magic to expose these funcs/values in the template)
   if (!options.locals) {
@@ -120,7 +120,7 @@ var renderFile = module.exports = function(path, options, fn){
       // find layout path relative to current template, then
       // recurse and use this layout as `body` in the parent
       options.locals.body = html;
-      renderFile(join(dirname(path), layout), options, fn);
+      renderFile(join(options.settings.views, layout), options, fn);
     } else {
       // no layout, just do the default:
       fn(null, html);

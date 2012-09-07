@@ -18,7 +18,7 @@
     "ejs": "~0.7.1"
   },
   "devDependencies": {
-    "express": "~3.0.0",
+    "express": "3.0.0beta4",
     "mocha": "*",
     "should": "*",
     "methods": "0.0.1"
