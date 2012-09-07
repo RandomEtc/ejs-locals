@@ -82,6 +82,10 @@ app.get('/deep-inheritance-blocks',function(req,res,next){
   res.render('inherit-grandchild-blocks.ejs');
 })
 
+app.get('/subfolder/subitem',function(req,res,next){
+  res.render('subfolder/subitem.ejs');
+});
+
 describe('app',function(){
 
   describe('GET /',function(){
@@ -271,6 +275,18 @@ describe('app',function(){
         .end(function(res){
           res.should.have.status(200);
           res.body.should.equal('<html><head><title>ejs-locals</title><script src="gc.js"></script>\n<script src="c.js"></script><link rel="stylesheet" href="gc.css" />\n<link rel="stylesheet" href="c.css" /></head><body><i>I am grandchild content.</i><b>I am child content.</b><u>I am parent content.</u></body></html>');
+          done();
+        })
+    })
+  })
+
+  describe('GET /subfolder/subitem',function(){
+    it('should render subitem.ejs and still include index.ejs',function(done){
+      request(app)
+        .get('/subfolder/subitem')
+        .end(function(res){
+          res.should.have.status(200);
+          res.body.should.equal('<html><head><title>ejs-locals</title></head><body><h1>Index</h1></body></html>');
           done();
         })
     })
