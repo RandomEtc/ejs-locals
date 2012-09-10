@@ -120,7 +120,7 @@ var renderFile = module.exports = function(path, options, fn){
       // find layout path relative to current template, then
       // recurse and use this layout as `body` in the parent
       options.locals.body = html;
-      renderFile(join(dirname(path), layout), options, fn);
+      renderFile(lookup(dirname(path), layout, options), options, fn);
     } else {
       // no layout, just do the default:
       fn(null, html);
@@ -183,8 +183,14 @@ function resolveObjectName(view){
 
 function lookup(root, partial, options){
   var ext = extname(partial) || '.ejs' // FIXME: reach 'view engine' from here?
-    , key = [ root, partial, ext ].join('-');
+    , key;
 
+  if (partial.charAt(0) === '/' && options.settings && options.settings.views) {
+    root = options.settings.views;
+    partial = partial.slice(1);
+  }
+
+  key = [ root, partial, ext ].join('-');
   if (options.cache && cache[key]) return cache[key];
 
   // Make sure we use dirname in case of relative partials
