@@ -197,6 +197,7 @@ function lookup(root, partial, options){
     , key = [ root, partial, ext ].join('-');
 
   if (options.cache && cache[key]) return cache[key];
+  if( options.settings['views'] ) root = options.settings['views'];
 
   // Make sure we use dirname in case of relative partials
   // ex: for partial('../user') look for /path/to/root/../user.ejs
@@ -219,12 +220,6 @@ function lookup(root, partial, options){
   if( exists(partial) ) return options.cache ? cache[key] = partial : partial;
 
   // FIXME:
-  // * there are other path types that Express 2.0 used to support but
-  //   the structure of the lookup involved View class methods that we
-  //   don't have access to any more
-  // * we probaly need to pass the Express app's views folder path into
-  //   this function if we want to support finding partials relative to
-  //   it as well as relative to the current view
   // * we have no tests for finding partials that aren't relative to
   //   the calling view
 
