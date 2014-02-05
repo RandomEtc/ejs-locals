@@ -8,6 +8,36 @@ var ejs = require('ejs')
   , join = path.join
   , basename = path.basename;
 
+
+/* from ejs-layout */
+var contentPattern = '&&<>&&'
+
+function contentFor(contentName) {
+  return contentPattern + contentName + contentPattern;
+}
+
+function parseContents(options) {
+  if (!options.locals.body) return;
+
+  var locals = options.locals;
+  var str = locals.body;
+  var regex = new RegExp('\n?' + contentPattern + '.+?' + contentPattern + '\n?', 'g')
+  var split = str.split(regex)
+  var matches = str.match(regex)
+
+  locals.body = split[0]
+  var i = 1;
+
+  if (matches != null) {
+    matches.forEach(function(match) {
+      var name = match.split(contentPattern)[1]
+      options.contentFor[name] = split[i];
+      i++;
+    });
+  }
+}
+
+
 /**
  * Express 3.x Layout & Partial support for EJS.
  *
@@ -68,6 +98,12 @@ var renderFile = module.exports = function(file, options, fn){
     options.locals = {};
   }
 
+
+  // make contentFor available in the view
+  if(!options.contentFor)
+    options.contentFor = contentFor;
+
+
   if (!options.locals.blocks) {
     // one set of blocks no matter how often we recurse
     var blocks = { scripts: new Block(), stylesheets: new Block() };
@@ -81,6 +117,9 @@ var renderFile = module.exports = function(file, options, fn){
   // override locals for layout/partial bound to current options
   options.locals.layout  = layout.bind(options);
   options.locals.partial = partial.bind(options);
+
+  // should extract the contentFor stuff here
+  parseContents(options)
 
   ejs.renderFile(file, options, function(err, html) {
 
@@ -136,6 +175,7 @@ var renderFile = module.exports = function(file, options, fn){
   });
 
 };
+
 
 /**
  * Memory cache for resolved object names.
@@ -299,6 +339,7 @@ function partial(view, options){
   for(var k in this)
     options[k] = options[k] || this[k];
 
+
   // extract object name from view
   name = options.as || resolveObjectName(view);
 
@@ -453,4 +494,3 @@ function stylesheet(path, media) {
   }
   return this;
 }
-
