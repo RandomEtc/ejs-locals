@@ -107,13 +107,32 @@ When called anywhere inside a template, requests that the output of the current 
 
 When called anywhere inside a template, adds the given view to that template using the current given `optionsOrCollection`. The usual way to use this is to pass an Array as the collection argument. The given view is then executed for each item in the Array; the item is passed into the view as a local with a name generated from the view's filename.
 
-For example, if you do `<%-partial('thing',things)%>` then each item in the `things` Array is passed to `thing.ejs` with the name `thing`. If you rename the template, the local name of each item will correspond to the template name.
+For example, if you do `<%-partial('thing', things)%>` then each item in the `things` Array is passed to `thing.ejs` with the name `thing`. If you rename the template/partial, the local name of each item will correspond to the template name.
+If you do `<%-partial('thing', {things: things, foo: {bar: 'bar')%>` then you will have access to `things` and `foo` from the template/partial, and `foo` would contain a `bar` key.
+
+The `name` can be relative *(default)* or absolute, to use the absolute way you will need to write the following, assuming we are in the `views/layout.ejs` and we want to include the partial located at `views/partials/foo.ejs`: `partial('../partials/foo.ejs', {_basePath: __dirname})`. The `_basePath` attribute is required to set the base path used to include the file.
+
+If you wish not to have to precise the `_basePath` every time, you can set it in a global variable from your `/app.js` for instance:
+
+```
+    __config = {
+      path: {
+        base: __dirname
+      }
+    };
+```
+
+Then you would only need to precise you want to use the global value:
+`views/partials/foo.ejs', {_useAbsolute: true})`
+
+
+**As you may have noticed, use the relative way do not need to explicitly write the file extension (.ejs), but the absolute way requires it.**
 
 ### `block(name,html)`
 
 When called anywhere inside a template, adds the given html to the named block. In the layout you can then do `<%-block('foo')%> to render all the html for that block.
 
-Since this relies on javascript strings, and bypasses EJS's default escaping, you should be very careful if you use this function with user-submitted data.
+Since this relies on javascript strings, and bypasses EJS's default escaping, **you should be very careful if you use this function with user-submitted data**.
 
 ### `script(src,type)`
 

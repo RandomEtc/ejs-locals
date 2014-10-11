@@ -5,7 +5,7 @@
   ],
   "name": "ejs-locals",
   "description": "Express 3.x locals for layout, partial and blocks.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/randometc/ejs-locals.git"

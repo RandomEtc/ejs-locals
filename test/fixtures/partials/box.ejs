@@ -1,0 +1,25 @@
+<% box_content = typeof box_content !== 'undefined' ? box_content : ''%>
+<% box_class = typeof box_class !== 'undefined' ? box_class : 'box'%>
+<% box_id = typeof box_id !== 'undefined' ? box_id : 'box_'%>
+<% box_title = typeof box_title !== 'undefined' ? box_title : ''%>
+<% box_title_icon = typeof box_title_icon !== 'undefined' ? box_title_icon : ''%>
+
+<div id="<%= box_id%>" class="<%= box_class %>">
+    <% if(box_title || box_title_icon) {%>
+        <div class="header">
+            <% if(box_title_icon) {%>
+                <span class="icon">
+                    <%- partial('icon', {icon: box_title_icon}) %>
+                </span>
+            <% } %>
+
+            <% if(box_title) {%>
+                <span class="title"><%= box_title %></span>
+            <% } %>
+            <hr>
+        </div>
+    <% } %>
+    <div class="content">
+        <%= typeof box_content == 'function' ? box_content() : box_content%>
+    </div>
+</div>
