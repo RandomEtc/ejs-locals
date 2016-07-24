@@ -118,7 +118,10 @@ var renderFile = module.exports = function(file, options, fn){
       // make sure caching works inside ejs.renderFile/render
       delete options.filename;
 
-      if (layout.length > 0 && layout[0] === path.sep) {
+      if (layout.length > 0 && layout.substr(0, 2) === '//') {
+        // if layout is an absolute and different view path to the views
+        layout = layout.substr(2);
+      } else if (layout.length > 0 && layout[0] === path.sep) {
         // if layout is an absolute path, find it relative to view options:
         layout = join(options.settings.views, layout.slice(1));
       } else {
