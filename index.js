@@ -60,6 +60,57 @@ var ejs = require('ejs')
  *
  */
 
+/*
+ *   Override EJS renderFile to allow super simple block structure
+ *
+ */
+
+ var BLOCK_REGEX = /<%\s*block\s+([$a-zA-Z_][a-zA-Z_0-9]*)\s*%>((?:.|\s)*?)<%\s*\/block\s*%>/ig;
+ var cache;
+ var fs = require('fs');
+ejs.renderFile = function(path, options, fn){
+  var key = path + ':string';
+
+  if ('function' == typeof options) {
+    fn = options, options = {};
+  }
+
+  options.filename = path;
+
+  try {
+    var str = options.cache
+      ? cache[key] || (cache[key] = fs.readFileSync(path, 'utf8'))
+      : fs.readFileSync(path, 'utf8');
+
+	// New code.
+	// Uses Regex to catch all blocks, render them, save them in object, and clean them from html	
+	var blocks = {};
+	var filename = options.filename;
+	str = str.replace(BLOCK_REGEX,function(_,blockName,blockContent){
+	  // use different cache key
+        options.filename = filename + "?block_" + blockName;
+		blocks[blockName] = ejs.render(blockContent,options);
+		return '';
+	});
+	// restore cache key
+	options.filename = filename;
+	// return html and generated blocks
+    fn(null, ejs.render(str, options),blocks);
+  } catch (err) {
+    fn(err);
+  }
+};
+ 
+  /**
+ * Render an EJS file at the given `path` and callback `fn(err, str)`.
+ *
+ * @param {String} path
+ * @param {Object|Function} options or callback
+ * @param {Function} fn
+ * @api public
+ */
+
+ 
 var renderFile = module.exports = function(file, options, fn){
 
   // Express used to set options.locals for us, but now we do it ourselves
@@ -82,12 +133,17 @@ var renderFile = module.exports = function(file, options, fn){
   options.locals.layout  = layout.bind(options);
   options.locals.partial = partial.bind(options);
 
-  ejs.renderFile(file, options, function(err, html) {
+  ejs.renderFile(file, options, function(err, html,blocks) {
 
     if (err) {
       return fn(err,html);
     }
-
+	// put rendered blocks in locals
+	if(blocks){
+		for(var blockName in blocks){
+			options.block(blockName,blocks[blockName]);
+		}
+	}
     var layout = options.locals._layoutFile;
 
     // for backward-compatibility, allow options to
