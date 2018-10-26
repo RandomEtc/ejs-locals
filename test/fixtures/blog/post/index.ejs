@@ -1,1 +1,2 @@
-<li><%=post.text%><ul><%-partial('comment',post.comments)%></ul></li>
+<% posts.forEach(function (post) { %><li><%=post.text%><ul><% post.comments.forEach(function (comment) { %><li><%=comment.text%></li><% })%>
+</ul></li><% }) %>

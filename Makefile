@@ -1,7 +1,7 @@
 TESTS = test/*.js
 REPORTER = spec
 TIMEOUT = 20000
-ISTANBUL = ./node_modules/.bin/istanbul
+PATH := ./node_modules/.bin:$(PATH)
 MOCHA = ./node_modules/mocha/bin/_mocha
 COVERALLS = ./node_modules/coveralls/bin/coveralls.js
 
@@ -9,17 +9,22 @@ clean:
 	@rm -rf node_modules
 
 test:
-	@NODE_ENV=test $(MOCHA) -r should -R $(REPORTER) -t $(TIMEOUT) \
+	@mocha -r should -R $(REPORTER) -t $(TIMEOUT) \
+		$(MOCHA_OPTS) \
+		$(TESTS)
+
+test-debug:
+	@mocha --debug-brk -r should -R $(REPORTER) -t $(TIMEOUT) \
 		$(MOCHA_OPTS) \
 		$(TESTS)
 
 test-cov:
-	@$(ISTANBUL) cover --report html $(MOCHA) -- -t $(TIMEOUT) -r should -R spec $(TESTS)
+	@istanbul cover --report html $(MOCHA) -- -t $(TIMEOUT) -r should -R spec $(TESTS)
 
 test-coveralls:
-	@$(ISTANBUL) cover --report lcovonly $(MOCHA) -- -t $(TIMEOUT) -r should -R spec $(TESTS)
+	@istanbul cover --report lcovonly $(MOCHA) -- -t $(TIMEOUT) -r should -R spec $(TESTS)
 	@echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
-	@cat ./coverage/lcov.info | $(COVERALLS) && rm -rf ./coverage
+	@cat ./coverage/lcov.info | coveralls && rm -rf ./coverage
 
 test-all: test test-coveralls
 

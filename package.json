@@ -20,19 +20,20 @@
     "ejs": "^2.6.1"
   },
   "devDependencies": {
-    "express": "~4.10.0",
-    "supertest": "*",
-    "mocha": "*",
-    "should": "~3.0.0",
-    "travis-cov": "*",
     "coveralls": "*",
-    "mocha-lcov-reporter": "*",
+    "eslint": "^3.11.1",
+    "express": "^4.10.0",
     "istanbul": "*",
     "methods": "*",
-    "supertest": "^2.0.1"
+    "mocha": "*",
+    "mocha-lcov-reporter": "*",
+    "should": "~3.0.0",
+    "supertest": "^2.0.1",
+    "travis-cov": "*"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "lint": "eslint --fix lib test"
   },
   "bugs": {
     "url": "https://github.com/JacksonTian/ejs-mate/issues"
